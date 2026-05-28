@@ -182,6 +182,138 @@ $total_shifts = $stmt->fetchColumn();
     <title>Employee Management</title>
     <link rel="stylesheet" href="../assets/employee.css">
     <link rel="stylesheet" href="../assets/dashboard.css">
+    <style>
+        /* Additional CSS to fix table width and action buttons alignment */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .data-table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Fixed width for specific columns */
+        .data-table th:nth-child(1),
+        .data-table td:nth-child(1) {
+            min-width: 100px;
+        } /* ID */
+
+        .data-table th:nth-child(2),
+        .data-table td:nth-child(2) {
+            min-width: 150px;
+        } /* Name */
+
+        .data-table th:nth-child(3),
+        .data-table td:nth-child(3) {
+            min-width: 200px;
+        } /* Email */
+
+        .data-table th:nth-child(4),
+        .data-table td:nth-child(4) {
+            min-width: 120px;
+        } /* Password */
+
+        .data-table th:nth-child(5),
+        .data-table td:nth-child(5) {
+            min-width: 120px;
+        } /* Role */
+
+        .data-table th:nth-child(6),
+        .data-table td:nth-child(6) {
+            min-width: 130px;
+        } /* Department */
+
+        .data-table th:nth-child(7),
+        .data-table td:nth-child(7) {
+            min-width: 120px;
+        } /* Shift */
+
+        .data-table th:nth-child(8),
+        .data-table td:nth-child(8) {
+            min-width: 100px;
+        } /* Salary */
+
+        .data-table th:nth-child(9),
+        .data-table td:nth-child(9) {
+            min-width: 100px;
+        } /* Status */
+
+        .data-table th:nth-child(10),
+        .data-table td:nth-child(10) {
+            min-width: 150px;
+            position: sticky;
+            right: 0;
+            background-color: white;
+        } /* Action */
+
+        /* Action buttons container */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .action-buttons .btn-sm {
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        /* Make sure the action column doesn't wrap */
+        .data-table td:last-child {
+            white-space: nowrap;
+        }
+
+        /* For screens smaller than 1400px, enable horizontal scroll */
+        @media (max-width: 1400px) {
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            .data-table {
+                min-width: 1300px;
+            }
+        }
+
+        /* Status badge styles */
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
 </head>
 
 <body class="dashboard">
@@ -317,7 +449,7 @@ $total_shifts = $stmt->fetchColumn();
 
         <div class="table-container">
 
-            <table>
+            <table class="data-table">
 
                 <thead>
                     <tr>
@@ -337,39 +469,39 @@ $total_shifts = $stmt->fetchColumn();
 
                 <?php foreach($employees as $emp): ?>
 
-                <tr>
-                    <td><?php echo $emp['employee_id']; ?></td>
-                    <td><?php echo $emp['firstname'] . ' ' . $emp['lastname']; ?></td>
-                    <td><?php echo $emp['email']; ?></td>
-                    <td><?php echo $emp['password']; ?></td>
-                    <td><?php echo $emp['role_name']; ?></td>
-                    <td><?php echo $emp['department_name']; ?></td>
-                    <td><?php echo $emp['shift_name']; ?></td>
-                    <td>₱<?php echo number_format($emp['monthly_salary'], 2); ?></td>
-                    <td>
-                        <span class="status status-<?php echo $emp['status']; ?>">
-                            <?php echo ucfirst($emp['status']); ?>
-                        </span>
-                    </td>
+                    <tr>
+                        <td><?php echo $emp['employee_id']; ?></td>
+                        <td><?php echo $emp['firstname'] . ' ' . $emp['lastname']; ?></td>
+                        <td><?php echo $emp['email']; ?></td>
+                        <td><?php echo $emp['password']; ?></td>
+                        <td><?php echo $emp['role_name']; ?></td>
+                        <td><?php echo $emp['department_name']; ?></td>
+                        <td><?php echo $emp['shift_name']; ?></td>
+                        <td>₱<?php echo number_format($emp['monthly_salary'], 2); ?></td>
+                        <td>
+                            <span class="status status-<?php echo $emp['status']; ?>">
+                                <?php echo ucfirst($emp['status']); ?>
+                            </span>
+                        </td>
 
-                    <td>
-                        <div class="action-buttons">
-                            <button type="button" class="btn btn-primary btn-sm"
-                                    onclick='editEmployee(<?php echo json_encode($emp); ?>)'>
-                                Edit
-                            </button>
-                            <a href="?delete=<?php echo $emp['id']; ?>"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('Delete <?php echo htmlspecialchars($emp['firstname'] . ' ' . $emp['lastname']); ?>? This cannot be undone.')">
-                                Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+                        <td>
+                            <div class="action-buttons">
+                                <button type="button" class="btn btn-primary btn-sm"
+                                        onclick='editEmployee(<?php echo json_encode($emp); ?>)'>
+                                    Edit
+                                </button>
+                                <a href="?delete=<?php echo $emp['id']; ?>"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Delete <?php echo htmlspecialchars($emp['firstname'] . ' ' . $emp['lastname']); ?>? This cannot be undone.')">
+                                    Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
 
                 <?php endforeach; ?>
 
-            </tbody>
+                </tbody>
             </table>
         </div>
     </div>

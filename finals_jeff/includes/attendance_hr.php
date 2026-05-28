@@ -62,6 +62,174 @@ $attendance_records = $stmt->fetchAll();
     <title>Attendance System</title>
     <link rel="stylesheet" href="../assets/dashboard.css">
     <link rel="stylesheet" href="../assets/attendance_hr.css">
+    <style>
+        /* ============================================ */
+        /* FIXED FILTER SECTION PADDING & STATUS BADGES */
+        /* ============================================ */
+        
+        /* Filter card styles */
+        .filter-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-checkbox label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        
+        .filter-checkbox input {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-group label {
+            margin: 0;
+            font-weight: 500;
+            color: #334155;
+        }
+        
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .filter-group select:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        .btn-filter {
+            background-color: #10b981;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-filter:hover {
+            background-color: #059669;
+        }
+        
+        /* Table styles */
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .attendance-table th,
+        .attendance-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .attendance-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .attendance-table tbody tr:hover {
+            background-color: #faf9ff;
+        }
+        
+        /* Status badges - FIXED */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        .status-present {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-late {
+            background-color: #fed7aa;
+            color: #9a3412;
+        }
+        
+        .status-absent {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-halfday {
+            background-color: #fef08a;
+            color: #713f12;
+        }
+        
+        /* For any other status */
+        .status-default {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        
+        /* Hours column */
+        .hours-cell {
+            font-weight: 500;
+            font-family: monospace;
+        }
+        
+        /* No records message */
+        .no-records {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filter-form {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .filter-group {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 
 <body class="dashboard">
@@ -110,30 +278,36 @@ $attendance_records = $stmt->fetchAll();
 
             <li class="nav-item">
                 <a href="employee.php" class="nav-link">
-                    <i>👥</i> Employees</a>
+                    <i>👥</i> Employees
+                </a>
             </li>
             <li class="nav-item">
                 <a href="attendance_hr.php" class="nav-link active">
-                    <i>📋</i> Attendance</a>
+                    <i>📋</i> Attendance
+                </a>
             </li>
             <li class="nav-item">
                 <a href="manage_leaves.php" class="nav-link">
-                    <i>✅</i> Leave Approval</a>
+                    <i>✅</i> Leave Approval
+                </a>
             </li>
             <li class="nav-item">
                 <a href="manage_incentives.php" class="nav-link">
-                    <i>🎁</i> Incentives</a>
+                    <i>🎁</i> Incentives
+                </a>
             </li>
             <li class="nav-item">
                 <a href="payroll.php" class="nav-link">
-                    <i>📊</i> Payroll</a>
+                    <i>📊</i> Payroll
+                </a>
             </li>
 
         <?php endif; ?>
 
         <li class="nav-item" style="margin-top: 20px;">
             <a href="logout.php" class="nav-link">
-                <i>🚪</i> Logout</a>
+                <i>🚪</i> Logout
+            </a>
         </li>
 
     </ul>
@@ -161,65 +335,64 @@ $attendance_records = $stmt->fetchAll();
         <div><?= date('l, F d, Y'); ?></div>
     </div>
 
-    <!-- FILTER -->
-    <div class="card">
-
-        <form method="GET">
+    <!-- FILTER SECTION - IMPROVED PADDING AND LAYOUT -->
+    <div class="filter-card">
+        <form method="GET" class="filter-form">
 
             <?php if ($user['is_hr'] || $user['is_admin']): ?>
-            <label>
-                <input type="checkbox" name="all_months"
-                    <?= $all_months ? 'checked' : '' ?>>
-                Show All Months (This Year)
-            </label>
+                <div class="filter-checkbox">
+                    <input type="checkbox" name="all_months" id="all_months" <?= $all_months ? 'checked' : '' ?>>
+                    <label for="all_months">☐ Show All Months (This Year)</label>
+                </div>
             <?php endif; ?>
 
-            <br><br>
+            <div class="filter-group">
+                <label>Month:</label>
+                <select name="month">
+                    <?php for ($m=1; $m<=12; $m++): ?>
+                        <option value="<?= str_pad($m,2,'0',STR_PAD_LEFT) ?>"
+                            <?= $month == str_pad($m,2,'0',STR_PAD_LEFT) ? 'selected' : '' ?>>
+                            <?= date('F', mktime(0,0,0,$m,1)) ?>
+                        </option>
+                    <?php endfor; ?>
+                </select>
+            </div>
 
-            <label>Month:</label>
-            <select name="month">
-                <?php for ($m=1; $m<=12; $m++): ?>
-                    <option value="<?= str_pad($m,2,'0',STR_PAD_LEFT) ?>"
-                        <?= $month == str_pad($m,2,'0',STR_PAD_LEFT) ? 'selected' : '' ?>>
-                        <?= date('F', mktime(0,0,0,$m,1)) ?>
-                    </option>
-                <?php endfor; ?>
-            </select>
+            <div class="filter-group">
+                <label>Year:</label>
+                <select name="year">
+                    <option value="2024" <?= $year==2024?'selected':'' ?>>2024</option>
+                    <option value="2025" <?= $year==2025?'selected':'' ?>>2025</option>
+                    <option value="2026" <?= $year==2026?'selected':'' ?>>2026</option>
+                </select>
+            </div>
 
-            <label>Year:</label>
-            <select name="year">
-                <option value="2024" <?= $year==2024?'selected':'' ?>>2024</option>
-                <option value="2025" <?= $year==2025?'selected':'' ?>>2025</option>
-                <option value="2026" <?= $year==2026?'selected':'' ?>>2026</option>
-            </select>
-
-            <button type="submit" class="btn btn-success">Filter</button>
+            <button type="submit" class="btn-filter">Filter</button>
 
         </form>
-
     </div>
 
-    <!-- TABLE -->
+    <!-- TABLE SECTION -->
     <div class="card">
 
         <?php if (empty($attendance_records)): ?>
-            <p>No attendance records found.</p>
+            <div class="no-records">
+                No attendance records found.
+            </div>
         <?php else: ?>
 
-        <table>
+        <table class="attendance-table">
 
             <thead>
                 <tr>
-                    <th>Date</th>
-
+                    <th>DATE</th>
                     <?php if ($user['is_hr'] || $user['is_admin']): ?>
-                        <th>Employee</th>
+                        <th>EMPLOYEE</th>
                     <?php endif; ?>
-
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    <th>Hours</th>
-                    <th>Status</th>
+                    <th>TIME IN</th>
+                    <th>TIME OUT</th>
+                    <th>HOURS</th>
+                    <th>STATUS</th>
                 </tr>
             </thead>
 
@@ -228,7 +401,6 @@ $attendance_records = $stmt->fetchAll();
                 <?php foreach ($attendance_records as $row): ?>
 
                 <tr>
-
                     <td><?= date('M d, Y', strtotime($row['date'])) ?></td>
 
                     <?php if ($user['is_hr'] || $user['is_admin']): ?>
@@ -237,20 +409,28 @@ $attendance_records = $stmt->fetchAll();
 
                     <td><?= $row['time_in'] ? date('h:i A', strtotime($row['time_in'])) : '-' ?></td>
                     <td><?= $row['time_out'] ? date('h:i A', strtotime($row['time_out'])) : '-' ?></td>
-                    <td><?= $row['hours_worked'] ?? 0 ?> hrs</td>
+                    <td class="hours-cell"><?= number_format($row['hours_worked'] ?? 0, 2) ?> hrs</td>
 
                     <td>
-                        <?php if ($row['status'] == 'present'): ?>
-                            <span class="present-cell">Present</span>
-                        <?php elseif ($row['status'] == 'late'): ?>
-                            <span class="late-cell">Late</span>
-                        <?php elseif ($row['status'] == 'absent'): ?>
-                            <span class="absent-cell">Absent</span>
-                        <?php else: ?>
-                            <?= ucfirst($row['status']) ?>
-                        <?php endif; ?>
+                        <?php 
+                        $status = strtolower($row['status'] ?? '');
+                        switch($status):
+                            case 'present': ?>
+                                <span class="status-badge status-present">Present</span>
+                                <?php break;
+                            case 'late': ?>
+                                <span class="status-badge status-late">Late</span>
+                                <?php break;
+                            case 'absent': ?>
+                                <span class="status-badge status-absent">Absent</span>
+                                <?php break;
+                            case 'halfday': ?>
+                                <span class="status-badge status-halfday">Half Day</span>
+                                <?php break;
+                            default: ?>
+                                <span class="status-badge status-default"><?= ucfirst($status ?: 'Unknown') ?></span>
+                        <?php endswitch; ?>
                     </td>
-
                 </tr>
 
                 <?php endforeach; ?>

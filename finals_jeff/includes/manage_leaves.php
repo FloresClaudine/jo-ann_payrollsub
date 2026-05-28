@@ -64,6 +64,290 @@ $leave_requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Leaves</title>
     <link rel="stylesheet" href="../assets/dashboard.css">
+    <style>
+        /* ============================================ */
+        /* ADDITIONAL STYLES FOR LEAVE MANAGEMENT */
+        /* ============================================ */
+        
+        /* Filter section styling */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .filter-form label {
+            font-weight: 600;
+            color: #334155;
+            margin: 0;
+        }
+        
+        .filter-form select {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            min-width: 150px;
+        }
+        
+        .filter-form select:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        /* Table container for horizontal scroll */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Leave requests table */
+        .leave-table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .leave-table th,
+        .leave-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        
+        .leave-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            white-space: nowrap;
+        }
+        
+        .leave-table tbody tr:hover {
+            background-color: #faf9ff;
+        }
+        
+        /* Column widths */
+        .leave-table th:nth-child(1),
+        .leave-table td:nth-child(1) {
+            width: 60px;
+            min-width: 60px;
+        }
+        
+        .leave-table th:nth-child(2),
+        .leave-table td:nth-child(2) {
+            width: 150px;
+            min-width: 150px;
+        }
+        
+        .leave-table th:nth-child(3),
+        .leave-table td:nth-child(3) {
+            width: 130px;
+            min-width: 130px;
+        }
+        
+        .leave-table th:nth-child(4),
+        .leave-table td:nth-child(4) {
+            width: 110px;
+            min-width: 110px;
+        }
+        
+        .leave-table th:nth-child(5),
+        .leave-table td:nth-child(5) {
+            width: 110px;
+            min-width: 110px;
+        }
+        
+        .leave-table th:nth-child(6),
+        .leave-table td:nth-child(6) {
+            width: 90px;
+            min-width: 90px;
+            text-align: center;
+        }
+        
+        .leave-table th:nth-child(7),
+        .leave-table td:nth-child(7) {
+            width: 200px;
+            min-width: 200px;
+        }
+        
+        .leave-table th:nth-child(8),
+        .leave-table td:nth-child(8) {
+            width: 100px;
+            min-width: 100px;
+        }
+        
+        .leave-table th:nth-child(9),
+        .leave-table td:nth-child(9) {
+            width: 100px;
+            min-width: 100px;
+        }
+        
+        .leave-table th:nth-child(10),
+        .leave-table td:nth-child(10) {
+            width: 160px;
+            min-width: 160px;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-pending {
+            background-color: #fef08a;
+            color: #713f12;
+        }
+        
+        .status-approved {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* Paid/Unpaid badges */
+        .paid-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .paid-badge.paid {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .paid-badge.unpaid {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* Action buttons - FIXED HORIZONTAL LAYOUT */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        
+        .btn-sm {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #059669;
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .btn-primary {
+            background-color: #6366f1;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #4f46e5;
+        }
+        
+        .done-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e2e8f0;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        /* Reason column text wrap */
+        .leave-table td:nth-child(7) {
+            word-break: break-word;
+            white-space: normal;
+            max-width: 200px;
+        }
+        
+        /* Total days center alignment */
+        .leave-table td:nth-child(6) {
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        /* No records message */
+        .no-records {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .filter-form {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .filter-form select {
+                width: 100%;
+            }
+            
+            .filter-form button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body class="dashboard">
@@ -173,10 +457,9 @@ $leave_requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h1>✅ Leave Approval Management</h1>
     </div>
 
-    <div class="card">
-
-        <!-- MONTH FILTER -->
-        <form method="GET" style="margin-bottom:20px;">
+    <!-- FILTER SECTION - IMPROVED LAYOUT -->
+    <div class="filter-section">
+        <form method="GET" class="filter-form">
             <label><strong>Filter By Month:</strong></label>
 
             <select name="month">
@@ -193,73 +476,101 @@ $leave_requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <button type="submit" class="btn btn-primary">Filter</button>
         </form>
+    </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Employee</th>
-                    <th>Leave Type</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Total Days</th>
-                    <th>Reason</th>
-                    <th>Paid / Unpaid</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
+    <!-- LEAVE REQUESTS TABLE -->
+    <div class="card">
+        <div class="table-container">
 
-            <tbody>
+            <?php if (empty($leave_requests)): ?>
+                <div class="no-records">
+                    No leave requests found.
+                </div>
+            <?php else: ?>
 
-            <?php foreach($leave_requests as $leave): ?>
+            <table class="leave-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee</th>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Total Days</th>
+                        <th>Reason</th>
+                        <th>Paid / Unpaid</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-                <tr>
-                    <td><?= $leave['id']; ?></td>
+                <tbody>
 
-                    <td>
-                        <?= htmlspecialchars($leave['firstname'] . ' ' . $leave['lastname']); ?>
-                    </td>
+                <?php foreach($leave_requests as $leave): ?>
 
-                    <td><?= htmlspecialchars($leave['leave_name']); ?></td>
+                    <tr>
+                        <td><?= htmlspecialchars($leave['id']); ?></td>
 
-                    <td><?= $leave['start_date']; ?></td>
-                    <td><?= $leave['end_date']; ?></td>
-                    <td><?= $leave['total_days']; ?></td>
+                        <td>
+                            <?= htmlspecialchars($leave['firstname'] . ' ' . $leave['lastname']); ?>
+                        </td>
 
-                    <td><?= htmlspecialchars($leave['reason']); ?></td>
+                        <td><?= htmlspecialchars($leave['leave_name']); ?></td>
 
-                    <!-- ✅ PAID / UNPAID -->
-                    <td>
-                        <?php if ($leave['is_paid'] == 1): ?>
-                            <span style="color:green; font-weight:bold;">Paid</span>
-                        <?php else: ?>
-                            <span style="color:red; font-weight:bold;">Unpaid</span>
-                        <?php endif; ?>
-                    </td>
+                        <td><?= date('M d, Y', strtotime($leave['start_date'])); ?></td>
+                        <td><?= date('M d, Y', strtotime($leave['end_date'])); ?></td>
+                        <td><?= $leave['total_days']; ?></td>
 
-                    <td>
-                        <span class="status status-<?= $leave['status']; ?>">
-                            <?= ucfirst($leave['status']); ?>
-                        </span>
-                    </td>
+                        <td><?= htmlspecialchars($leave['reason']); ?></td>
 
-                    <td>
-                        <?php if($leave['status'] == 'pending'): ?>
-                            <a href="approve_leave.php?id=<?= $leave['id']; ?>" class="btn btn-success btn-sm">Approve</a>
-                            <a href="reject_leave.php?id=<?= $leave['id']; ?>" class="btn btn-danger btn-sm">Reject</a>
-                        <?php else: ?>
-                            Done
-                        <?php endif; ?>
-                    </td>
+                        <!-- PAID / UNPAID BADGES -->
+                        <td>
+                            <?php if ($leave['is_paid'] == 1): ?>
+                                <span class="paid-badge paid">Paid</span>
+                            <?php else: ?>
+                                <span class="paid-badge unpaid">Unpaid</span>
+                            <?php endif; ?>
+                        </td>
 
-                </tr>
+                        <!-- STATUS BADGES -->
+                        <td>
+                            <span class="status-badge status-<?= $leave['status']; ?>">
+                                <?= ucfirst($leave['status']); ?>
+                            </span>
+                        </td>
 
-            <?php endforeach; ?>
+                        <!-- ACTION BUTTONS - FIXED HORIZONTAL LAYOUT -->
+                        <td>
+                            <?php if($leave['status'] == 'pending'): ?>
+                                <div class="action-buttons">
+                                    <a href="approve_leave.php?id=<?= $leave['id']; ?>" 
+                                       class="btn btn-success btn-sm"
+                                       onclick="return confirm('Approve leave request for <?= htmlspecialchars($leave['firstname'] . ' ' . $leave['lastname']); ?>?')">
+                                        Approve
+                                    </a>
+                                    <a href="reject_leave.php?id=<?= $leave['id']; ?>" 
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Reject leave request for <?= htmlspecialchars($leave['firstname'] . ' ' . $leave['lastname']); ?>?')">
+                                        Reject
+                                    </a>
+                                </div>
+                            <?php else: ?>
+                                <span class="done-badge">
+                                    <?= ucfirst($leave['status']); ?>
+                                </span>
+                            <?php endif; ?>
+                        </td>
 
-            </tbody>
-        </table>
+                    </tr>
 
+                <?php endforeach; ?>
+
+                </tbody>
+            </table>
+
+            <?php endif; ?>
+
+        </div>
     </div>
 
 </main>

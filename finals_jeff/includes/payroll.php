@@ -211,6 +211,83 @@ $payrolls = $pdo->query("
     <meta charset="UTF-8">
     <title>Payroll Management</title>
     <link rel="stylesheet" href="../assets/dashboard.css">
+    <style>
+        /* Action buttons container - horizontal alignment */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .action-buttons .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .action-buttons .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+        
+        .action-buttons .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-sm {
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+        
+        /* Table container responsive */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body class="dashboard">
 
@@ -448,6 +525,7 @@ $payrolls = $pdo->query("
     </div>
 
 </main>
+
 <!-- PAYROLL DETAILS MODAL -->
 <div id="payrollModal" style="
     display:none;

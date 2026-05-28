@@ -86,6 +86,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>My Request Leave</title>
     <link rel="stylesheet" href="../assets/dashboard.css">
     <link rel="stylesheet" href="../assets/leave.css">
+    <style>
+        /* Enhanced submit button styles */
+        .btn-submit {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+        }
+    </style>
 </head>
 
 <body class="dashboard">
@@ -218,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label>Reason</label>
         <textarea name="reason" required></textarea>
 
-        <button type="submit">Submit Leave Request</button>
+        <button type="submit" class="btn-submit">📨 Submit Leave Request</button>
 
         </form>
 
